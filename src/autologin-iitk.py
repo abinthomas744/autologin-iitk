@@ -18,6 +18,7 @@ import logging
 import platform
 import urllib.parse
 import urllib.request
+from logging.handlers import RotatingFileHandler
 
 # Platform-Specific Settings
 if platform.system() == "Linux":
@@ -27,9 +28,19 @@ else:
     LOGOUT_FILE = "C:\\Windows\\Temp\\iitk_logout_url.txt"
     LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 
-# Global Settings
+# Global Settings - Configure logging
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_FILE = os.path.join(SCRIPT_DIR, "autologin-iitk.log")
 DATE_FORMAT = "%b %d %H:%M:%S"
-logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=DATE_FORMAT)
+logging.basicConfig(
+    level=logging.INFO,
+    format=LOG_FORMAT,
+    datefmt=DATE_FORMAT,
+    handlers=[
+        RotatingFileHandler(LOG_FILE, maxBytes=1*1024*1024, backupCount=3, mode='a'),
+        logging.StreamHandler()
+    ]
+)
 
 # Function: Perform Prelogout
 def perform_prelogout(opener):
